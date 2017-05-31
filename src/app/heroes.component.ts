@@ -32,7 +32,7 @@ export class HeroesComponent implements OnInit {
     }
 
     gotoDetail(): void {
-        this.router.navigate(['/detail', this.selectedHero.id])
+        this.router.navigate(['/detail', this.selectedHero.id]);
     }
 
     add(name: string): void {
@@ -45,7 +45,7 @@ export class HeroesComponent implements OnInit {
             });
     }
 
-    delete(hero: Hero):void {
+    delete(hero: Hero): void {
         this.heroService
             .delete(hero.id)
             .then(() => {

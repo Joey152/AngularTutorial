@@ -34,13 +34,13 @@ export class HeroSearchComponent implements OnInit {
 
     ngOnInit(): void {
         this.heroes = this.searchTerms
-            //wait 300ms after each keystroke before considering term
+            // wait 300ms after each keystroke before considering term
             .debounceTime(300)
             // ignore if next search term is the same as previous
             .distinctUntilChanged()
-            //switch to new observable each time the term changes
+            // switch to new observable each time the term changes
             .switchMap(term => term
-                //return the http search observable
+                // return the http search observable
                 ? this.heroSearchService.search(term)
                 // or the observable of empty heroes if there was no search term
                 : Observable.of<Hero[]>([]))
@@ -52,7 +52,7 @@ export class HeroSearchComponent implements OnInit {
     }
 
     gotoDetail(hero: Hero): void {
-        let link = ['/detail', hero.id];
+        const link = ['/detail', hero.id];
         this.router.navigate(link);
     }
 }
