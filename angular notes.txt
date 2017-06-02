@@ -1,0 +1,165 @@
+angular notes:
+
+When to use Injectable?
+
+Root Module
+- import
+   - only NgModules
+- declarations
+   - all components
+   - directives
+   - pipes
+- bootstrap
+   - the component(s) to start with
+   - advanced options can be changed in src/main.ts
+
+One way to declare a simple class
+export class Hero {
+  constructor(
+    public id: number,
+    public name: String) {}
+}
+ - declares a constructor
+ - declare public property
+ - init property with corresponding argument
+
+User Input
+ - $event
+   - the payload that the event just processed
+   - properties of event depend on the event
+   - https://developer.mozilla.org/en-US/docs/Web/API/Event
+   - not proper style to pass $event
+ - template reference variable
+   - #
+   - <input #box (keyup)="onKey(box.value)">
+
+Forms
+ - ngModel needs name attribute when used in a form
+ - get diagnostic() { return JSON.stringify(this.model); }
+ - ng-touched, ng-untouched
+   - control has been visited
+ - ng-dirty, ng-pristine
+   - control's value has been changed
+ - ng-valid, ng-valid
+   - control's value is valid
+
+Dependancy injection
+ - reread and take notes
+
+Template Syntax
+ - all html but, script, html, body, and base are allowed
+ - interpolation
+   - {{}}
+   - gets value from component to display
+   - evaluates as javascript* then converts to a string
+     - nonvalid javascript: assignments, new, ;, ,, ++, --, bitwise ops
+ - template expressions should be:
+   - no visible side effects
+   - quick execution
+   - simplicity
+   - idempotence
+ - template statement responds to a effect
+   - should have a side effect
+   - (click)="deleteHero()"
+     - the stuff in quotes
+ - template reference names take precedence over component context names
+ - HTML attibute vs DOM property
+   - an attribute is used in the beginning to change the prorperty
+   - eg.
+     - <input type="text" value="Bob">
+     - Salty is input into the textbox
+     - input.getAttribute('value') return "Bob"
+ - template binding works with properties and events, not attributes
+ - useful link https://angular.io/docs/ts/latest/guide/template-syntax.html#!#binding-targets
+
+[hero]
+ - data binding
+ - from component to template
+ - <img [src]="heroImageUrl"> or <img bind-src="heroImageUrl">
+
+ - omit brackets when all is true (maybe never):
+   - the target property accepts a string
+   - the string is a fixed value
+   - the initial value never changes
+   - why declare a variable in the template vs compoonent?
+ - Attribute binding
+   - <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+ - Class binding
+   - <div [class.special]="isSpecial">The class binding is special</div>
+   - NgClass preferred for setting multiple
+ - style binding
+   - <button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
+   - <button [style.color]="isSpecial ? 'red': 'green'">Red</button>
+   - NgStyle preferred when setting multiple styles
+
+(click)
+ - event binding
+ - from template to component
+ - <button (click)="onSave()">Save</button> or <button on-click="onSave()">On Save</button>
+
+[(size)]
+ - two way binding
+ - cannot bind use variables for <input> and <select>
+   - NgModel can be used to get this functionality
+
+ - Attribute Directives
+   - listen and modify the behaviour of other HTML elements, attriubutes, and components
+     - NgClass, NgStyle, NgModel
+ - NgModel only works for an elemt supported by a ControlValueAccessor
+   - expands to <input [ngModel]="currentHero.name" (ngModelChange)="currentHero.name=$event">
+ - Structural Directives
+   - responsible for HTML layout. reshapes the DOM
+   - *ngIf
+     - if falsey destroys the component and all sub-components
+     - can guard against null values
+   - *ngFor
+     - <div *ngFor="let hero of heroes">{{hero.name}}</div>
+     - <div *ngFor="let hero of heroes; let i=index">{{i + 1}} - {{hero.name}}</div>
+     - with trackBy
+       - to improve performance
+       - add trackByHeroes(index: number, hero: Hero): number { return hero.id; }
+       - <div *ngFor="let hero of heroes; trackBy: trackByHeroes">{{hero.id}}) {{hero.name}}</div>
+   - NgSwitch
+     - <div [ngSwitch]="currentHero.emotion">
+         <happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></happy-hero>
+         <sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"></sad-hero>
+         <confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"></confused-hero>
+         <unknown-hero  *ngSwitchDefault           [hero]="currentHero"></unknown-hero>
+       </div>
+ - Template reference variables
+   - #var
+   - <input #phone placeholder="phone number"> or <input ref-phone placeholder="phone number">
+     - phone can be referenced anywhere in the template
+   - <form (ngSubmit)="onSubmit(heroForm)" #heroForm="ngForm">
+     - can reference angular directives instead of the html elements
+ - input and output properties
+   - @Input()  hero: Hero;
+     @Output() deleteRequest = new EventEmitter<Hero>();
+     or
+   - @Component({
+       inputs: ['hero'],
+       outputs: ['deleteRequest'],
+     })
+   - input recieve data values
+   - output expose event producers
+   - //  @Output(alias) propertyName = ...
+     @Output('myClick') clicks = new EventEmitter<string>(); to change name
+     or
+   - @Directive({
+       // propertyName:alias
+       outputs: ['clicks:myClick']
+     })
+   - The pipe operator
+     - |
+     - <div>Title through uppercase pipe: {{title | uppercase}}</div>
+     - to be used when transformation is needed before binding
+     - can be chained <div>Title through uppercase pipe: {{title | uppercase | lowercase}}</div>
+     - parameters <div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+   - The safe navigation operator
+     - ?.
+     - guard against nuls and undefined values
+     - The current hero's name is {{currentHero?.name}}
+
+Lifecycle Hooks
+ - components and directives have a lifecycle as Angular creates, updates, and destroys them
+ - each interface has a single hook method
